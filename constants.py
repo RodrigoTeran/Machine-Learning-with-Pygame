@@ -1,4 +1,4 @@
-WINDOW_SIZE_W = 1100
+WINDOW_SIZE_W = 1250
 WINDOW_SIZE_H = 540
 FPS = 350
 
@@ -12,6 +12,6 @@ CAR_HEIGHT = 64 // 4
 
 LINES_COLOR = (0, 255, 0)
 
-HEXAGON_FILE = "./images/hexagon.png"
+HEXAGON_FILE = "./images/obstacle.png"
 HEXAGON_WIDTH = 129 // 3
 HEXAGON_HEIGHT = 116 // 3

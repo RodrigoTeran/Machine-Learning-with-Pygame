@@ -14,7 +14,7 @@ def rot_center(image, rect, angle):
 
 class Car:
     def __init__(self):
-        self.posX = WINDOW_SIZE_W / 2 + 370
+        self.posX = 1110
         self.posY = WINDOW_SIZE_H - 100
         self.speed = .5
         self.angle = 90

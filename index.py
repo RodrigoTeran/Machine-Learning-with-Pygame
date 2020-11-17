@@ -66,7 +66,11 @@ def run_game():
                            car.longitudeLineRight)
 
         carRect = car.draw(window)
-        map.createMap(window, carRect, car)
+        map.createMap(window, [
+            carRect
+        ], [
+            car
+        ])
 
         if car.isAccelerating or car.right or car.left:  # is moving
             if determinantForInitLines:

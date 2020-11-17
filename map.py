@@ -83,26 +83,30 @@ def getSecondPointForReferenceCar(car, typePoint):
 
 
 class Map:
-    def createMap(self, window, carRect, car):
+    def createMap(self, window, carsRect, cars):
         numberOfRow = 0
 
-        lineLeft = pygame.draw.line(window, car.linesColor, (car.posX, car.posY),
-                         (car.coordenatesLineLeft), car.linesThickness)
-        lineCenter = pygame.draw.line(window, car.linesColor, (car.posX, car.posY),
-                         (car.coordenatesLineCenter), car.linesThickness)
-        lineRight = pygame.draw.line(window, car.linesColor, (car.posX, car.posY),
-                         (car.coordenatesLineRight), car.linesThickness)
+        for car in cars:
+            car.lineLeftRect = pygame.draw.line(window, car.linesColor, (car.posX, car.posY),
+                             (car.coordenatesLineLeft), car.linesThickness)
+            car.lineCenterRect = pygame.draw.line(window, car.linesColor, (car.posX, car.posY),
+                             (car.coordenatesLineCenter), car.linesThickness)
+            car.lineRightRect = pygame.draw.line(window, car.linesColor, (car.posX, car.posY),
+                             (car.coordenatesLineRight), car.linesThickness)
 
         for row in hexagonsPositions:
             numberOfColumn = 0
             for column in row:
-                isDead = self.draw(window, column, numberOfColumn, numberOfRow, carRect, car,
-                                   lineLeft,
-                                   lineCenter,
-                                   lineRight)
-                if isDead:
-                    car.__init__()
-                    car.initLines()
+                counter = 0
+                for car in cars:
+                    isDead = self.draw(window, column, numberOfColumn, numberOfRow, carsRect[counter], car,
+                                       car.lineLeftRect,
+                                       car.lineCenterRect,
+                                       car.lineRightRect)
+                    if isDead:
+                        car.__init__()
+                        car.initLines()
+                    counter += 1
                 numberOfColumn += 1
             numberOfRow += 1
 
@@ -116,15 +120,15 @@ class Map:
              lineLeft,
              lineCenter,
              lineRight
-             ):
-        leftGap = 230
-        upperGap = 10
+        ):
+        leftGap = 250
+        upperGap = 22.5
         if column == 1:
-            x = HEXAGON_WIDTH / 1.25 * numberOfColumn + leftGap
+            x = HEXAGON_WIDTH * numberOfColumn + leftGap
             if numberOfColumn % 2 == 0:
                 y = HEXAGON_HEIGHT * numberOfRow + upperGap
             else:
-                y = HEXAGON_HEIGHT * numberOfRow + (HEXAGON_HEIGHT / 2) + upperGap
+                y = HEXAGON_HEIGHT * numberOfRow + upperGap
 
             hexagonRect = window.blit(hexagonImageResized, (x, y))
             isDead = self.checkCollision(hexagonRect, carRect)
