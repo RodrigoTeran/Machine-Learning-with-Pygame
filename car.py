@@ -5,6 +5,7 @@ import math
 carImage = pygame.image.load(CAR_FILE)
 carImageResized = pygame.transform.scale(carImage, (CAR_WIDTH, CAR_HEIGHT))
 
+
 def rot_center(image, rect, angle):
     rot_image = pygame.transform.rotate(image, angle)
     rot_rect = rot_image.get_rect(center=rect.center)
@@ -91,11 +92,6 @@ class Car:
         self.longitudeLineLeft = 0
         self.longitudeLineCenter = 0
         self.longitudeLineRight = 0
-
-    def drawLines(self, window):
-        # De adelante
-        # pygame.draw.line(window, LINES_COLOR, (self.posX, self.posY), (self.frontDistanceX, self.frontDistanceY), 1)
-        pass
 
     def accelerate(self):
         if self.isAccelerating:

@@ -84,7 +84,6 @@ def getSecondPointForReferenceCar(car, typePoint):
 
 class Map:
     def createMap(self, window, carRect, car):
-        car.drawLines(window)
         numberOfRow = 0
 
         lineLeft = pygame.draw.line(window, car.linesColor, (car.posX, car.posY),
@@ -103,6 +102,7 @@ class Map:
                                    lineRight)
                 if isDead:
                     car.__init__()
+                    car.initLines()
                 numberOfColumn += 1
             numberOfRow += 1
 
@@ -120,47 +120,29 @@ class Map:
         leftGap = 230
         upperGap = 10
         if column == 1:
+            x = HEXAGON_WIDTH / 1.25 * numberOfColumn + leftGap
             if numberOfColumn % 2 == 0:
-                x = HEXAGON_WIDTH / 1.25 * numberOfColumn + leftGap
                 y = HEXAGON_HEIGHT * numberOfRow + upperGap
-                hexagonRect = window.blit(hexagonImageResized, (x, y))
-                isDead = self.checkCollision(hexagonRect, carRect)
-
-                isContactLineLeft = self.checkCollision(hexagonRect, lineLeft)
-                isContactLineCenter = self.checkCollision(hexagonRect, lineCenter)
-                isContactLineRight = self.checkCollision(hexagonRect, lineRight)
-
-                if isContactLineLeft:
-                    car.isGrowingLineLeft = False
-                if isContactLineCenter:
-                    car.isGrowingLineCenter = False
-                if isContactLineRight:
-                    car.isGrowingLineRight = False
-
-                getSecondPointForReferenceCar(car, 45)
-                getSecondPointForReferenceCar(car, 0)
-                getSecondPointForReferenceCar(car, -45)
-
-                return isDead
             else:
-                x = HEXAGON_WIDTH / 1.25 * numberOfColumn + leftGap
                 y = HEXAGON_HEIGHT * numberOfRow + (HEXAGON_HEIGHT / 2) + upperGap
-                hexagonRect = window.blit(hexagonImageResized, (x, y))
-                isDead = self.checkCollision(hexagonRect, carRect)
 
-                isContactLineLeft = self.checkCollision(hexagonRect, lineLeft)
-                isContactLineCenter = self.checkCollision(hexagonRect, lineCenter)
-                isContactLineRight = self.checkCollision(hexagonRect, lineRight)
+            hexagonRect = window.blit(hexagonImageResized, (x, y))
+            isDead = self.checkCollision(hexagonRect, carRect)
 
-                if isContactLineLeft:
-                    car.isGrowingLineLeft = False
-                if isContactLineCenter:
-                    car.isGrowingLineCenter = False
-                if isContactLineRight:
-                    car.isGrowingLineRight = False
+            isContactLineLeft = self.checkCollision(hexagonRect, lineLeft)
+            isContactLineCenter = self.checkCollision(hexagonRect, lineCenter)
+            isContactLineRight = self.checkCollision(hexagonRect, lineRight)
 
-                getSecondPointForReferenceCar(car, 45)
-                getSecondPointForReferenceCar(car, 0)
-                getSecondPointForReferenceCar(car, -45)
+            if isContactLineLeft:
+                car.isGrowingLineLeft = False
+            if isContactLineCenter:
+                car.isGrowingLineCenter = False
+            if isContactLineRight:
+                car.isGrowingLineRight = False
 
-                return isDead
+            getSecondPointForReferenceCar(car, 45)
+            getSecondPointForReferenceCar(car, 0)
+            getSecondPointForReferenceCar(car, -45)
+
+            return isDead
+
