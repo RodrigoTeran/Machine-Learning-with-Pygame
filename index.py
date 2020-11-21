@@ -14,9 +14,9 @@ def update_data_labels(window, dt, game_time, font, lineLeft, lineCenter, lineRi
     update_label(round(1000/dt, 2), "FPS", font, x_pos, y_pos, window)
     update_label(round(game_time/1000, 2), "Game time", font, x_pos, y_pos + 2 * gap, window)
 
-    update_label(round(lineLeft, 2), "Line Left", font, x_pos, y_pos + 4 * gap, window)
-    update_label(round(lineCenter, 2), "Line Center", font, x_pos, y_pos + 6 * gap, window)
-    update_label(round(lineRight, 2), "Line Right", font, x_pos, y_pos + 8 * gap, window)
+    update_label(round(lineLeft, 2), "Generation", font, x_pos, y_pos + 4 * gap, window)
+    update_label(round(lineCenter, 2), "Number Of Car", font, x_pos, y_pos + 6 * gap, window)
+    update_label(round(lineRight, 2), "Fitness", font, x_pos, y_pos + 8 * gap, window)
 
 
 def run_game():
@@ -50,27 +50,23 @@ def run_game():
                     car.left = True
                 if event.key == pygame.K_d:  # Derecha
                     car.right = True
-                if event.key == pygame.K_w:  # Acelerar
-                    car.isAccelerating = True
             elif event.type == pygame.KEYUP:
                 if event.key == pygame.K_a:  # Izquierda
                     car.left = False
                 if event.key == pygame.K_d:  # Derecha
                     car.right = False
-                if event.key == pygame.K_w:  # Frenar
-                    car.isAccelerating = False
 
-        update_data_labels(window, dt, game_time, label_font,
-                           car.longitudeLineLeft,
-                           car.longitudeLineCenter,
-                           car.longitudeLineRight)
-
-        carRect = car.draw(window)
+        carRect = car.draw(window, map)
         map.createMap(window, [
             carRect
         ], [
             car
         ])
+
+        update_data_labels(window, dt, game_time, label_font,
+                           map.generation,
+                           map.numberOfCar,
+                           car.fitness / 1000)
 
         if car.isAccelerating or car.right or car.left:  # is moving
             if determinantForInitLines:

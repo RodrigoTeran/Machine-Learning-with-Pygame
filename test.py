@@ -1,26 +1,14 @@
-import math
+"""
+ 1. Git
+ 2. Descargar código de Github
+ 3. Crear Clase Red neuronal
+ 4. Ver diseño de redes neuronales
+ 5. Ver mutation algorithms
 
-def measureDistanceBetweenTwoPoints(p1X, p1Y, p2X, p2Y):
-    xDelta = p1X - p2X
-    yDelta = p1Y - p2Y
-    distance = math.sqrt(xDelta ** 2 + yDelta ** 2)
-    return distance
+ 6. Implementar mutation en la red neuronal
+ 7. Implementar la red neuronal en el juego
+ 8. Entrenar la red neuronal
 
-def getFunctionFromTwoPointsFrontDistance(centerP1X, centerP1Y, p2X, p2Y, xValue):
-    xDelta = centerP1X - p2X
-    yDelta = centerP1Y - p2Y
-
-    if xDelta == 0:
-        if centerP1Y > p2Y:  # Mirando arriba
-            finalYValue = p2Y - xValue
-        else:   # Mirando abajo
-            finalYValue = p2Y + xValue
-        return [xValue, finalYValue]
-    m = yDelta / xDelta
-    b = centerP1Y - (m * centerP1X)
-
-    finalYValue = m * xValue + b
-    return [xValue, finalYValue]
-
-
-print(getFunctionFromTwoPointsFrontDistance(1, 1, 1, 2, 3))
+ Proyecto de ustedes con su juego:
+ 1. Crear la red neuronal
+"""

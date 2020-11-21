@@ -21,6 +21,8 @@ hexagonsPositions = [
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
 ]
 
+weightsOfCars = []
+
 def measureDistanceBetweenTwoPoints(p1X, p1Y, p2X, p2Y):
     xDelta = p1X - p2X
     yDelta = p1Y - p2Y
@@ -83,6 +85,19 @@ def getSecondPointForReferenceCar(car, typePoint):
 
 
 class Map:
+    def __init__(self):
+        self.generation = 1
+        self.numberOfCar = 1
+    @staticmethod
+    def sortWeights():
+        weightsOfCars.sort(key=lambda x: x[2], reverse=False)
+        cutOff = int(len(weightsOfCars) * MUTATION_CUT_OFF)
+        goodCars = weightsOfCars[0: cutOff]
+        badCars = weightsOfCars[cutOff:]
+        numBadToTake = int(len(weightsOfCars) * MUTATION_BAD_TO_KEEP)
+
+        # TODO implementar learning
+
     def createMap(self, window, carsRect, cars):
         numberOfRow = 0
 
@@ -94,6 +109,7 @@ class Map:
             car.lineRightRect = pygame.draw.line(window, car.linesColor, (car.posX, car.posY),
                              (car.coordenatesLineRight), car.linesThickness)
 
+        dead = False
         for row in hexagonsPositions:
             numberOfColumn = 0
             for column in row:
@@ -104,10 +120,33 @@ class Map:
                                        car.lineCenterRect,
                                        car.lineRightRect)
                     if isDead:
-                        car.__init__()
+                        if len(weightsOfCars) == GENERATION_SIZE:
+                            weightsOfCars[self.numberOfCar - 1] = [
+                                [car.nnet.weightsInputHidden],
+                                [car.nnet.weightsHiddenOutput],
+                                [car.fitness]
+                            ]
+                        else:
+                            weightsOfCars.append([
+                                [car.nnet.weightsInputHidden],
+                                [car.nnet.weightsHiddenOutput],
+                                [car.fitness]
+                            ])
+                        if self.numberOfCar == GENERATION_SIZE:
+                            self.generation += 1
+                            self.numberOfCar = 1
+                            Map.sortWeights()
+                        else:
+                            self.numberOfCar += 1
+                        car.reset()
                         car.initLines()
+                        dead = True
+                        break
                     counter += 1
+                    if dead: break
+                if dead: break
                 numberOfColumn += 1
+            if dead: break
             numberOfRow += 1
 
     def checkCollision(self, hexagonRect, carRect):

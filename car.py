@@ -1,6 +1,5 @@
-from constants import *
-import pygame
-import math
+from neuronalNetwork import *
+from map import *
 
 carImage = pygame.image.load(CAR_FILE)
 carImageResized = pygame.transform.scale(carImage, (CAR_WIDTH, CAR_HEIGHT))
@@ -19,10 +18,14 @@ class Car:
         self.speed = .5
         self.angle = 90
 
+        self.nnet = NNet(3, 3, 2)
+        self.clock = pygame.time.Clock()
+        self.fitness = 0
+
         self.right = False
         self.left = False
 
-        self.isAccelerating = False
+        self.isAccelerating = True
         self.carDrawed = carImageResized
 
         self.frontDistanceX = self.posX
@@ -43,6 +46,8 @@ class Car:
         self.isGrowingLineLeft = True
         self.isGrowingLineCenter = True
         self.isGrowingLineRight = True
+
+        self.map = None
 
     @staticmethod
     def getAngleInRadians(angle):
@@ -68,7 +73,52 @@ class Car:
 
         return [conjugatedAngle, section]
 
-    def draw(self, window):
+    def reset(self):
+        self.nnet = NNet(3, 3, 2)
+        if len(weightsOfCars) == GENERATION_SIZE:
+            self.nnet.weightsInputHidden = weightsOfCars[self.map.numberOfCar - 1][0][0]
+            self.nnet.weightsHiddenOutput = weightsOfCars[self.map.numberOfCar - 1][1][0]
+        self.posX = 1110
+        self.posY = WINDOW_SIZE_H - 100
+        self.angle = 90
+        self.fitness = 0
+        self.right = False
+        self.left = False
+        self.carDrawed = carImageResized
+        self.frontDistanceX = self.posX
+        self.frontDistanceY = self.posY
+        self.frontTotalDistance = 0
+        self.coordenatesLineLeft = [self.posX, self.posY]
+        self.coordenatesLineCenter = [self.posX, self.posY]
+        self.coordenatesLineRight = [self.posX, self.posY]
+        self.longitudeLineLeft = 0
+        self.longitudeLineCenter = 0
+        self.longitudeLineRight = 0
+        self.isGrowingLineLeft = True
+        self.isGrowingLineCenter = True
+        self.isGrowingLineRight = True
+
+    def draw(self, window, mapDraw):
+        self.fitness += self.clock.tick(FPS)
+        self.map = mapDraw
+
+        # Change direction
+        results = self.nnet.getOutputs([
+            self.longitudeLineLeft,
+            self.longitudeLineCenter,
+            self.longitudeLineRight
+        ])
+
+        if results[0] >= .5:
+            self.left = True
+        else:
+            self.left = False
+
+        if results[1] >= .5:
+            self.right = True
+        else:
+            self.right = False
+
         self.accelerate()
         if self.left:
             self.angle += .75
@@ -78,6 +128,7 @@ class Car:
         oldRect = self.carDrawed.get_rect(center=(self.posX, self.posY))
         shipImg, newRect = rot_center(self.carDrawed, oldRect, self.angle)
         carRect = window.blit(shipImg, newRect)
+
         return carRect
 
     def initLines(self):
