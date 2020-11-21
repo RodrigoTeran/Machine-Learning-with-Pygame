@@ -24,19 +24,22 @@ class NNet:
 
         return finalMultiplicationHiddenOutput
 
-    def modifyWeights(self):
-        NNet.modifyArray(self.weightsInputHidden)
-        NNet.modifyArray(self.weightsHiddenOutput)
+    @staticmethod
+    def modifyWeights(array):
+        return [NNet.modifyArray(array[0]), NNet.modifyArray(array[1])]
 
-    def create_mixed_weights(self, net1, net2):
-        self.weightsInputHidden = NNet.mixArrays(net1.weightsInputHidden,  net2.weightsInputHidden)
-        self.weightsHiddenOutput = NNet.mixArrays(net1.weightsHiddenOutput,  net2.weightsHiddenOutput)
+    @staticmethod
+    def create_mixed_weights(array, net1, net2):
+        array.append(NNet.mixArrays(net1[0][0], net2[0][0]))
+        array.append(NNet.mixArrays(net1[1][0], net2[1][0]))
+        return array
 
     @staticmethod
     def modifyArray(array):
         for x in numpy.nditer(array, op_flags=['readwrite']):
             if random.random() < MUTATION_MODIFY_CHANCE:
                 x[...] = numpy.random.random_sample() - 0.5
+        return array
 
     @staticmethod
     def mixArrays(array1, array2):
@@ -46,7 +49,6 @@ class NNet:
 
         numToTake = totalEntries - (int(totalEntries * MUTATION_ARRAY_MIX_PERCENT))
         idx = numpy.random.choice(numpy.arange(totalEntries), numToTake, replace=False)
-        print("idx: ", idx)
 
         res = numpy.random.rand(numRows, numCols)
 
@@ -68,6 +70,7 @@ def tests():
     print('array1', array1, sep='\n')
 
     print()
+    """
 
     NNet.modifyArray(array1)
     print('array1 modified', array1, sep='\n')
@@ -79,7 +82,7 @@ def tests():
     print()
 
     mixed = NNet.mixArrays(array1, array2)
-    print('mixed arrays', mixed, sep='\n')
+    print('mixed arrays', mixed, sep='\n')"""
 
 
 

@@ -1,6 +1,6 @@
-from constants import *
 import pygame
 import math
+from neuronalNetwork import *
 
 hexagonImage = pygame.image.load(HEXAGON_FILE)
 hexagonImageResized = pygame.transform.scale(hexagonImage, (HEXAGON_WIDTH, HEXAGON_HEIGHT))
@@ -8,16 +8,16 @@ hexagonImageResized = pygame.transform.scale(hexagonImage, (HEXAGON_WIDTH, HEXAG
 hexagonsPositions = [
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
     [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1],
-    [1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1],
-    [1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 1],
-    [1, 1, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1],
-    [1, 1, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1],
-    [1, 1, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1],
-    [1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1],
-    [1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1],
+    [1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+    [1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+    [1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+    [1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1],
+    [1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 1],
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
 ]
 
@@ -88,15 +88,54 @@ class Map:
     def __init__(self):
         self.generation = 1
         self.numberOfCar = 1
+
     @staticmethod
     def sortWeights():
-        weightsOfCars.sort(key=lambda x: x[2], reverse=False)
+        global weightsOfCars
+        # print(weightsOfCars)
+        weightsOfCars.sort(key=lambda x: x[2], reverse=True)
         cutOff = int(len(weightsOfCars) * MUTATION_CUT_OFF)
         goodCars = weightsOfCars[0: cutOff]
         badCars = weightsOfCars[cutOff:]
         numBadToTake = int(len(weightsOfCars) * MUTATION_BAD_TO_KEEP)
 
-        # TODO implementar learning
+        counterBadCars = 0
+        for car in badCars:
+            newCar = NNet.modifyWeights(car)
+            badCars[counterBadCars] = newCar
+            counterBadCars += 1
+
+        newCarsFinalArray = []
+
+        idxBadToTake = numpy.random.choice(numpy.arange(len(badCars)), numBadToTake, replace=False)
+
+        for index in idxBadToTake:
+            newCarsFinalArray.append(badCars[index])
+
+        newCarsFinalArray.extend(goodCars)
+
+        while len(newCarsFinalArray) < len(weightsOfCars):
+            idxGoodToTake = numpy.random.choice(numpy.arange(len(goodCars)), 2, replace=False)
+            if idxGoodToTake[0] != idxGoodToTake[1]:
+                newSuperCar = NNet.create_mixed_weights(
+                    [],
+                    goodCars[idxGoodToTake[0]],
+                    goodCars[idxGoodToTake[1]])
+
+                if random.random() < MUTATION_MODIFY_CHANCE_LIMIT:
+                    newSuperCar = NNet.modifyWeights(newSuperCar)
+
+                newCarsFinalArray.append(newSuperCar)
+
+        weightsOfCars = newCarsFinalArray
+        """print("")
+        print("")
+        print("")
+        print("")
+        print("")
+        print(weightsOfCars)"""
+
+
 
     def createMap(self, window, carsRect, cars):
         numberOfRow = 0
@@ -160,7 +199,7 @@ class Map:
              lineCenter,
              lineRight
         ):
-        leftGap = 250
+        leftGap = 300
         upperGap = 22.5
         if column == 1:
             x = HEXAGON_WIDTH * numberOfColumn + leftGap

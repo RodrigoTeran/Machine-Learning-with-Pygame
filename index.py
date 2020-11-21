@@ -7,7 +7,7 @@ def update_label(data, title, font, x, y, window):
     window.blit(label, (x, y))
 
 
-def update_data_labels(window, dt, game_time, font, lineLeft, lineCenter, lineRight):
+def update_data_labels(window, dt, game_time, font, lineLeft, lineCenter, lineRight, weights):
     y_pos = 10
     gap = 10
     x_pos = 10
@@ -17,7 +17,25 @@ def update_data_labels(window, dt, game_time, font, lineLeft, lineCenter, lineRi
     update_label(round(lineLeft, 2), "Generation", font, x_pos, y_pos + 4 * gap, window)
     update_label(round(lineCenter, 2), "Number Of Car", font, x_pos, y_pos + 6 * gap, window)
     update_label(round(lineRight, 2), "Fitness", font, x_pos, y_pos + 8 * gap, window)
+    
+    if len(weights) > 0:
+        update_label("", "Weights Input Hidden", font, x_pos, y_pos + 12 * gap, window)
+        counter = 0
+        for i in weights[0][0][0][0]:
+            update_label(i, "- ", font, x_pos, y_pos + (14 + counter) * gap, window)
+            counter += 2
+        for i in weights[0][0][0][1]:
+            update_label(i, "- ", font, x_pos, y_pos + (14 + counter) * gap, window)
+            counter += 2
 
+        update_label("", "Weights Hidden Optput", font, x_pos, y_pos + (16 + counter) * gap, window)
+
+        for i in weights[0][1][0][0]:
+            update_label(i, "- ", font, x_pos, y_pos + (18 + counter) * gap, window)
+            counter += 2
+        for i in weights[0][1][0][1]:
+            update_label(i, "- ", font, x_pos, y_pos + (18 + counter) * gap, window)
+            counter += 2
 
 def run_game():
 
@@ -66,7 +84,8 @@ def run_game():
         update_data_labels(window, dt, game_time, label_font,
                            map.generation,
                            map.numberOfCar,
-                           car.fitness / 1000)
+                           car.fitness / 1000,
+                           weightsOfCars)
 
         if car.isAccelerating or car.right or car.left:  # is moving
             if determinantForInitLines:

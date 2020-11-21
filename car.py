@@ -1,4 +1,3 @@
-from neuronalNetwork import *
 from map import *
 
 carImage = pygame.image.load(CAR_FILE)
@@ -13,12 +12,12 @@ def rot_center(image, rect, angle):
 
 class Car:
     def __init__(self):
-        self.posX = 1110
+        self.posX = 1160
         self.posY = WINDOW_SIZE_H - 100
         self.speed = .5
         self.angle = 90
 
-        self.nnet = NNet(3, 3, 2)
+        self.nnet = NNet(3, 2, 2)
         self.clock = pygame.time.Clock()
         self.fitness = 0
 
@@ -74,11 +73,11 @@ class Car:
         return [conjugatedAngle, section]
 
     def reset(self):
-        self.nnet = NNet(3, 3, 2)
+        self.nnet = NNet(3, 2, 2)
         if len(weightsOfCars) == GENERATION_SIZE:
             self.nnet.weightsInputHidden = weightsOfCars[self.map.numberOfCar - 1][0][0]
             self.nnet.weightsHiddenOutput = weightsOfCars[self.map.numberOfCar - 1][1][0]
-        self.posX = 1110
+        self.posX = 1160
         self.posY = WINDOW_SIZE_H - 100
         self.angle = 90
         self.fitness = 0
